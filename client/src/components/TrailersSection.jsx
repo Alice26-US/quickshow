@@ -15,8 +15,8 @@ import { PlayCircle, PlayCircleIcon } from "lucide-react";
 
             <div className="relative mt-6">
                 <BlurCircle top="-100px" right="-100px" />
-                <ReactPlayer url={currentTrailer.videoUrl} controls={false} 
-                className="mx-auto max-w-full" width="960px" height="540px" />
+                <ReactPlayer url={currentTrailer.videoUrl} controls
+                className="aspect-video max-w-3xl mx-auto" width="100%" height="100%" />
             </div>
 
             <div className="group grid grid-cols-4 gap-4 md:gap-8 mt-8 max-w-3xl mx-auto">
