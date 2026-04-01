@@ -1,14 +1,13 @@
 import React, { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { assets } from "../assets/assets"
-import { MenuIcon, SearchIcon, BookOpen, XIcon } from "lucide-react"
-import { useClerk, UserButton, useUser } from "@clerk/clerk-react"
+import { MenuIcon, SearchIcon, BookOpen, XIcon, UserCircle } from "lucide-react"
+import { useAuth } from "../context/AuthContext"
 
 const Navbar = () => {
 
     const [ isOpen, setIsOpen ] = useState(false);
-    const {user} = useUser()
-    const {openSignUp} = useClerk()
+    const { user, logout } = useAuth()
 
     const navigate = useNavigate()
 
@@ -33,24 +32,45 @@ const Navbar = () => {
 
             <Link className="hover:text-white transition-colors" onClick={()=>  {scrollTo(0,0); setIsOpen(false)}} to='/'>Home</Link>
             <Link className="hover:text-white transition-colors" onClick={()=>  {scrollTo(0,0); setIsOpen(false)}} to='/topics'>Browse Topics</Link>
-            <Link className="hover:text-white transition-colors" onClick={()=>  {scrollTo(0,0); setIsOpen(false)}} to='/dashboard'>My Dashboard</Link>
+            {user?.isAdmin ? (
+               <Link className="hover:text-white transition-colors" onClick={()=>  {scrollTo(0,0); setIsOpen(false)}} to='/admin'>Admin Panel</Link>
+            ) : (
+               <Link className="hover:text-white transition-colors" onClick={()=>  {scrollTo(0,0); setIsOpen(false)}} to='/dashboard'>My Dashboard</Link>
+            )}
         </div>
 
     <div className="flex items-center gap-8" >
          <SearchIcon className=" max-md:hidden w-6 h-6 cursor-pointer text-gray-300 hover:text-white transition-colors"/>
          {
             !user ? (
-                  <button onClick={openSignUp}
+                  <Link to="/login"
                   className="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-full transition-all shadow-lg shadow-blue-500/20">
                       Sign In
-                  </button>
+                  </Link>
                   ) : (
-                <UserButton>
-                    <UserButton.MenuItems>
-                        <UserButton.Action label="My Revisions"  labelIcon=
-                        {<BookOpen width={15}/>} onClick={()=> navigate('/my-sessions')}/>
-                    </UserButton.MenuItems>
-                 </UserButton>
+                <div className="flex items-center gap-4">
+                  <span className="font-medium text-sm text-gray-300 hidden md:block">{user?.name}</span>
+                  <div className="relative group cursor-pointer">
+                    <img src={user?.image || assets.profile} alt="Avatar" className="w-9 h-9 rounded-full border-2 border-gray-700 object-cover" />
+                    <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-800 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all flex flex-col overflow-hidden">
+                      {user?.isAdmin ? (
+                        <button onClick={()=> navigate('/admin')} className="flex items-center gap-2 px-4 py-3 hover:bg-gray-800 text-left text-sm transition-colors text-white">
+                          <BookOpen width={15}/> Admin Panel
+                        </button>
+                      ) : (
+                        <button onClick={()=> navigate('/my-sessions')} className="flex items-center gap-2 px-4 py-3 hover:bg-gray-800 text-left text-sm transition-colors text-white">
+                          <BookOpen width={15}/> My Revisions
+                        </button>
+                      )}
+                      <button onClick={()=> navigate('/profile')} className="flex items-center gap-2 px-4 py-3 hover:bg-gray-800 text-left text-sm transition-colors text-white">
+                          <UserCircle width={15}/> Manage Profile
+                      </button>
+                      <button onClick={logout} className="px-4 py-3 hover:bg-gray-800 text-left text-sm text-red-500 transition-colors">
+                        Sign Out
+                      </button>
+                    </div>
+                  </div>
+                </div>
              )
          }
          

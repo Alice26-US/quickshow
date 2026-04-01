@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import toast from "react-hot-toast";
 
 const TopicDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { userId } = useAuth();
+  const { user } = useAuth();
+  const userId = user?._id;
   
   const [topic, setTopic] = useState(null);
   const [loading, setLoading] = useState(true);

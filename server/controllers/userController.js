@@ -1,10 +1,11 @@
 import User from '../models/User.js';
+import bcrypt from 'bcryptjs';
 
-// Get user subscription details
+// Get user details
 export const getUser = async (req, res) => {
     try {
-        const { clerkId } = req.params;
-        const user = await User.findById(clerkId);
+        const { userId } = req.params;
+        const user = await User.findById(userId);
         if(!user) return res.json({ success: false, message: "User not found" });
         res.json({ success: true, user });
     } catch(err) {
@@ -36,14 +37,14 @@ export const toggleProStatus = async (req, res) => {
 // Mock Mobile Money Payment
 export const mockPayment = async (req, res) => {
     try {
-        const { clerkId, phoneProvider, phoneNumber } = req.body;
+        const { userId, phoneProvider, phoneNumber } = req.body;
         // Mock payment verification logic always accepting 
         if(!phoneNumber || !phoneProvider) {
             return res.json({ success: false, message: "Invalid payment details" });
         }
         
         // Upgrade user
-        await User.findByIdAndUpdate(clerkId, { isPro: true });
+        await User.findByIdAndUpdate(userId, { isPro: true });
         
         res.json({ 
             success: true, 
@@ -51,5 +52,32 @@ export const mockPayment = async (req, res) => {
         });
     } catch(err) {
         res.json({ success: false, message: "Checkout failed" });
+    }
+}
+
+// Update User Profile & Avatar
+export const updateProfile = async (req, res) => {
+    try {
+        const { name, password, userId } = req.body;
+        
+        let updateData = {};
+        if (name) updateData.name = name;
+        if (password) {
+            const salt = await bcrypt.genSalt(10);
+            updateData.password = await bcrypt.hash(password, salt);
+        }
+        if (req.file) {
+            updateData.image = `http://localhost:3000/Content/${req.file.filename}`;
+        }
+        
+        const updatedUser = await User.findByIdAndUpdate(
+            userId || req.body.userId, 
+            updateData, 
+            { new: true }
+        ).select("-password");
+
+        res.json({ success: true, message: "Profile updated successfully", user: updatedUser });
+    } catch(err) {
+        res.json({ success: false, message: err.message });
     }
 }

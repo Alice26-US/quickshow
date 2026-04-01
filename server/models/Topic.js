@@ -14,6 +14,10 @@ const topicSchema = new mongoose.Schema({
     enum: ["Beginner", "Intermediate", "Advanced"],
     default: "Beginner"
   },
+  thumbnail: {
+    type: String,
+    default: ""
+  },
   videos: [
     {
       filepath: String, // Path to local content (e.g. Content/videos/file.mp4)

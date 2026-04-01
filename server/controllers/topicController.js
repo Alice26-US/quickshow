@@ -5,6 +5,13 @@ import path from 'path';
 import csvParser from 'csv-parser';
 import fs from 'fs';
 
+// Initialize core directories to prevent MULTER ENOENT crashes
+['Content', 'Content/videos', 'Content/flashcards', 'Content/thumbnails'].forEach(dir => {
+    if(!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+});
+
 // Multer Storage Configuration
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -12,6 +19,8 @@ const storage = multer.diskStorage({
       cb(null, 'Content/videos');
     } else if (file.fieldname === 'csvFile') {
       cb(null, 'Content/flashcards');
+    } else if (file.fieldname === 'thumbnail') {
+      cb(null, 'Content/thumbnails');
     } else {
       cb(null, 'Content/'); // fallback
     }
@@ -34,9 +43,15 @@ export const createTopic = async (req, res) => {
       for (const file of req.files['videos']) {
         videos.push({
           title: file.originalname,
-          filepath: file.path // e.g. Content/videos/12345.mp4
+          filepath: `http://localhost:3000/Content/videos/${file.filename}` 
         });
       }
+    }
+
+    // Parse uploaded thumbnail
+    let thumbnail = "";
+    if (req.files && req.files['thumbnail']) {
+        thumbnail = `http://localhost:3000/Content/thumbnails/${req.files['thumbnail'][0].filename}`;
     }
 
     // Parse uploaded CSV flashcards
@@ -72,6 +87,7 @@ export const createTopic = async (req, res) => {
       title,
       description,
       level,
+      thumbnail,
       videos,
       flashcards,
     });

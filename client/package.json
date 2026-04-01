@@ -11,7 +11,6 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@clerk/clerk-react": "^5.61.3",
     "@tailwindcss/vite": "^4.1.18",
     "axios": "^1.14.0",
     "lucide-react": "^0.511.0",

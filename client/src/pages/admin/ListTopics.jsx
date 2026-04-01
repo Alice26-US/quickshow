@@ -12,7 +12,8 @@ const ListTopics = () => {
     useEffect(() => {
         const fetchTopics = async () => {
             try {
-                const { data } = await axios.get("http://localhost:3000/api/topics/list");
+                const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+                const { data } = await axios.get(`${API_URL}/topics/list`);
                 if (data.success) {
                     setTopics(data.topics);
                 }

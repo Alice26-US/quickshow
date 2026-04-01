@@ -8,6 +8,9 @@ import RevisionSession from "./pages/RevisionSession"
 import MySessions from "./pages/MySessions"
 import Upgrade from "./pages/Upgrade"
 import Favorite from "./pages/Favorite"
+import Login from "./pages/Login"
+import Signup from "./pages/Signup"
+import Profile from "./pages/Profile"
 import { Toaster } from "react-hot-toast" 
 import Footer from "./components/Footer"
 import  Layout  from "./pages/admin/Layout"
@@ -25,11 +28,15 @@ const App = () => {
     <Toaster />
      { ! isAdminRoute && <Navbar/>}
      <Routes>
+       <Route path="/login" element={<Login/>} />
+       <Route path="/signup" element={<Signup/>} />
        <Route path="/" element={<Home/>} />
        <Route path="/topics" element={<Topics/>} />
        <Route path="/topics/:id" element={<TopicDetails/>} />
        <Route path="/session/:id" element={<RevisionSession/>} />
+       <Route path="/dashboard" element={<MySessions/>} />
        <Route path="/my-sessions" element={<MySessions/>} />
+       <Route path="/profile" element={<Profile/>} />
        <Route path="/upgrade" element={<Upgrade/>} />
        <Route path="/favorite" element={<Favorite/>} />
        <Route path="/admin/*" element={<Layout/>}>

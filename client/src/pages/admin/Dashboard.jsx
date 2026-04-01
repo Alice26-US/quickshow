@@ -1,13 +1,34 @@
-import React from "react";
-import { Users, BookOpen, Video, Activity, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { Users, BookOpen, Video, Activity, ArrowUpRight, ArrowDownRight, FolderOpen } from "lucide-react";
 
 const Dashboard = () => {
-  // Mock enterprise data
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboard = async () => {
+        try {
+            const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+            const { data } = await axios.get(`${API_URL}/admin/dashboard`);
+            if (data.success) {
+                setDashboardData(data);
+            }
+        } catch (error) {
+            toast.error("Failed to load dashboard data");
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchDashboard();
+  }, []);
+
   const stats = [
-    { title: "Total Topics", value: "24", change: "+12%", increase: true, icon: BookOpen, color: "text-blue-500", bg: "bg-blue-500/10" },
-    { title: "Active Students", value: "1,204", change: "+5.4%", increase: true, icon: Users, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-    { title: "Video Assets", value: "142", change: "+2%", increase: true, icon: Video, color: "text-purple-500", bg: "bg-purple-500/10" },
-    { title: "Engagement Rate", value: "68%", change: "-1.2%", increase: false, icon: Activity, color: "text-amber-500", bg: "bg-amber-500/10" },
+    { title: "Total Topics", value: dashboardData?.stats?.totalTopics || 0, change: "Live", increase: true, icon: BookOpen, color: "text-blue-500", bg: "bg-blue-500/10" },
+    { title: "Active Students", value: dashboardData?.stats?.totalUsers || 0, change: "Live", increase: true, icon: Users, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+    { title: "Revisions Hosted", value: dashboardData?.stats?.activeSessions || 0, change: "Live", increase: true, icon: Video, color: "text-purple-500", bg: "bg-purple-500/10" },
+    { title: "Pro Licenses", value: dashboardData?.stats?.proUsers || 0, change: "Live", increase: true, icon: Activity, color: "text-amber-500", bg: "bg-amber-500/10" },
   ];
 
   return (
@@ -17,7 +38,13 @@ const Dashboard = () => {
         <p className="text-gray-400 mt-1">Monitor key performance indicators and learning analytics.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      {loading ? (
+          <div className="flex justify-center items-center h-40">
+              <p className="text-gray-500">Loading enterprise metrics...</p>
+          </div>
+      ) : (
+          <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {stats.map((stat, idx) => (
           <div key={idx} className="bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
             <div className="absolute -right-6 -top-6 opacity-5 group-hover:opacity-10 transition-opacity">
@@ -44,15 +71,26 @@ const Dashboard = () => {
         <div className="lg:col-span-2 bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-sm">
            <h2 className="text-xl font-bold mb-4">Recent Activity</h2>
            <div className="space-y-4">
-              {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-800/50 transition-colors border border-transparent hover:border-gray-700">
-                      <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold">JD</div>
-                      <div className="flex-1">
-                          <p className="text-sm text-gray-300"><span className="font-bold text-white">John Doe</span> completed session <span className="text-blue-400 cursor-pointer hover:underline">Advanced React UI Patterns</span></p>
-                          <p className="text-xs text-gray-500 mt-1">{i * 2} hours ago</p>
+              {dashboardData?.recentActivity?.length > 0 ? (
+                  dashboardData.recentActivity.map((activity) => (
+                      <div key={activity.id} className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-800/50 transition-colors border border-transparent hover:border-gray-700">
+                          <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold">
+                              {activity.userInitials}
+                          </div>
+                          <div className="flex-1">
+                              <p className="text-sm text-gray-300">
+                                  <span className="font-bold text-white">{activity.user}</span> started session: <span className="text-blue-400 cursor-pointer hover:underline">{activity.topic}</span>
+                              </p>
+                              <p className="text-xs text-gray-500 mt-1">{new Date(activity.time).toLocaleString()}</p>
+                          </div>
                       </div>
+                  ))
+              ) : (
+                  <div className="py-8 text-center text-gray-500 border border-dashed border-gray-800 rounded-xl">
+                      <FolderOpen size={30} className="mx-auto mb-2 opacity-50" />
+                      <p>No recent session activity</p>
                   </div>
-              ))}
+              )}
            </div>
         </div>
 
@@ -89,6 +127,8 @@ const Dashboard = () => {
            </div>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 };

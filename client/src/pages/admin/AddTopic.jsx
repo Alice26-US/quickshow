@@ -7,12 +7,14 @@ const AddTopic = () => {
   const [formData, setFormData] = useState({ title: "", description: "", level: "Beginner" });
   const [videoFiles, setVideoFiles] = useState([]);
   const [csvFile, setCsvFile] = useState(null);
+  const [thumbnailFile, setThumbnailFile] = useState(null);
   
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   
   const videoInputRef = useRef(null);
   const csvInputRef = useRef(null);
+  const thumbnailInputRef = useRef(null);
 
   const handleInputChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -33,6 +35,7 @@ const AddTopic = () => {
     
     Array.from(videoFiles).forEach((file) => data.append("videos", file));
     if (csvFile) data.append("csvFile", csvFile);
+    if (thumbnailFile) data.append("thumbnail", thumbnailFile);
 
     setIsUploading(true);
     setUploadProgress(0);
@@ -51,8 +54,10 @@ const AddTopic = () => {
         setFormData({ title: "", description: "", level: "Beginner" });
         setVideoFiles([]);
         setCsvFile(null);
+        setThumbnailFile(null);
         if(videoInputRef.current) videoInputRef.current.value = '';
         if(csvInputRef.current) csvInputRef.current.value = '';
+        if(thumbnailInputRef.current) thumbnailInputRef.current.value = '';
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || "Deployment failed.");
@@ -147,13 +152,37 @@ const AddTopic = () => {
                     <input ref={csvInputRef} type="file" accept=".csv" onChange={(e) => setCsvFile(e.target.files[0])} className="hidden" />
                 </div>
                 {csvFile ? (
-                    <div className="flex items-center justify-between bg-emerald-500/10 text-emerald-400 p-3 rounded-lg text-sm border border-emerald-500/20">
+                    <div className="flex items-center justify-between bg-emerald-500/10 text-emerald-400 p-3 rounded-lg text-sm border border-emerald-500/20 mb-6">
                         <span className="truncate max-w-[80%]">{csvFile.name}</span>
                         <XCircle size={16} className="cursor-pointer hover:text-emerald-300" onClick={() => { setCsvFile(null); csvInputRef.current.value=''; }} />
                     </div>
                 ) : (
-                    <p className="text-xs text-gray-500 text-center">Headers recognized: Front, Back, Question, Answer</p>
+                    <p className="text-xs text-gray-500 text-center mb-6">Headers recognized: Front, Back, Question, Answer</p>
                 )}
+
+                <div 
+                    className="border-2 border-dashed border-gray-700 bg-gray-950 hover:bg-gray-800/30 hover:border-purple-500/50 transition-all rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer group mb-4 relative overflow-hidden"
+                    onClick={() => thumbnailInputRef.current.click()}
+                 >
+                    {thumbnailFile ? (
+                        <div className="absolute inset-0 w-full h-full">
+                            <img src={URL.createObjectURL(thumbnailFile)} alt="Thumbnail" className="w-full h-full object-cover opacity-80" />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 hover:bg-black/60 transition-colors">
+                                 <p className="text-sm font-bold text-white shadow-sm">+ Change Thumbnail</p>
+                            </div>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="w-12 h-12 bg-purple-500/10 text-purple-500 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                <UploadCloud size={24} />
+                            </div>
+                            <p className="text-sm font-medium text-white text-center mb-1">Course Thumbnail (Optional)</p>
+                            <p className="text-xs text-gray-500 text-center">PNG, JPG recommended</p>
+                        </>
+                    )}
+                    
+                    <input ref={thumbnailInputRef} type="file" accept="image/*" onChange={(e) => setThumbnailFile(e.target.files[0])} className="hidden" />
+                </div>
              </div>
 
              <div className="bg-gradient-to-br from-blue-900/40 to-purple-900/40 border border-blue-500/20 p-8 rounded-2xl shadow-sm">

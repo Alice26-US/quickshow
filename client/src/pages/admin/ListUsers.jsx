@@ -10,7 +10,8 @@ const ListUsers = () => {
 
     const fetchUsers = async () => {
         try {
-            const { data } = await axios.get("http://localhost:3000/api/users/list");
+            const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+            const { data } = await axios.get(`${API_URL}/users/list`);
             if (data.success) {
                 setUsers(data.users);
             }
@@ -27,7 +28,8 @@ const ListUsers = () => {
 
     const togglePro = async (userId, currentPro) => {
         try {
-            const { data } = await axios.post("http://localhost:3000/api/users/toggle-pro", {
+            const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+            const { data } = await axios.post(`${API_URL}/users/toggle-pro`, {
                 userId,
                 isPro: !currentPro
             });

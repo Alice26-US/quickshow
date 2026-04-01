@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '@clerk/clerk-react';
+import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { Send, BookOpen, Video, PlayCircle } from 'lucide-react';
@@ -8,7 +8,8 @@ import { Send, BookOpen, Video, PlayCircle } from 'lucide-react';
 const RevisionSession = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { userId } = useAuth();
+    const { user } = useAuth();
+    const userId = user?._id;
     const [session, setSession] = useState(null);
     const [loading, setLoading] = useState(true);
     

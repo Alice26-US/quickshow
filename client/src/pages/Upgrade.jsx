@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth } from "../context/AuthContext";
 import { CheckCircle2, ShieldCheck, Smartphone, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Upgrade = () => {
-  const { userId } = useAuth();
+  const { user } = useAuth();
+  const userId = user?._id;
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
@@ -32,7 +33,7 @@ const Upgrade = () => {
         await new Promise(r => setTimeout(r, 2500));
 
         const { data } = await axios.post("http://localhost:3000/api/users/checkout", {
-            clerkId: userId,
+            userId: userId,
             phoneProvider,
             phoneNumber
         });

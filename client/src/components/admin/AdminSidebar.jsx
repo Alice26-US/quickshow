@@ -2,13 +2,16 @@ import { LayoutDashboard, ListCollapseIcon, ListIcon, PlusSquareIcon, UsersIcon 
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { assets } from "../../assets/assets";
+import { useAuth } from "../../context/AuthContext";
 
 const AdminSidebar = () => {
 
-  const user = {
-    firstName: "Admin",
-    lastName: "User",
-    imageUrl: assets.profile,
+  const { user } = useAuth();
+
+  const displayUser = {
+    firstName: user?.name?.split(' ')[0] || "Admin",
+    lastName: user?.name?.split(' ')[1] || "User",
+    imageUrl: user?.image || assets.profile,
   };
 
   const adminNavlinks = [
@@ -24,12 +27,12 @@ const AdminSidebar = () => {
 
       <img
         className="h-9 md:h-14 w-9 md:w-14 rounded-full mx-auto"
-        src={user.imageUrl}
+        src={displayUser.imageUrl}
         alt="sidebar"
       />
 
-      <p className="mt-2 text-base max-md:hidden">
-        {user.firstName} {user.lastName}
+      <p className="mt-2 text-base max-md:hidden text-gray-300">
+        {displayUser.firstName} {displayUser.lastName}
       </p>
 
       <div className="w-full">
