@@ -1,6 +1,6 @@
 import React from "react"
 import { dummyShowsData } from "../assets/assets"
-import MovieCard from "../components/MovieCard"
+import TopicCard from "../components/TopicCard"
 import BlurCircle from "../components/BlurCircle"
 
 const Favorite = () => {
@@ -10,10 +10,10 @@ const Favorite = () => {
 
       <BlurCircle top="150px" left="0px"/>
       <BlurCircle bottom="50px" right="50px"/>
-      <h1 className="text-lg font-medium my-4">Your Favourite Movies</h1>
+      <h1 className="text-lg font-medium my-4">Your Favourite Topics</h1>
       <div className="flex flex-wrap max-sm:justify-center gap-8">
         {dummyShowsData.map((movie)=> (
-          <MovieCard movie={movie} key={movie._id}/>
+          <TopicCard topic={{...movie, description: movie.overview, level: "All Levels"}} key={movie._id}/>
         ))}
       </div>
     </div>
