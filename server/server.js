@@ -17,6 +17,20 @@ app.use(express.json());
 app.use(cors());
 app.use(clerkMiddleware());
 
+// Serve static content from 'Content' directory
+app.use('/Content', express.static('Content'));
+
+import topicRouter from './routes/topicRoute.js';
+import sessionRouter from './routes/sessionRoute.js';
+import aiRouter from './routes/aiRoute.js';
+import userRouter from './routes/userRoute.js';
+
+// API Routes
+app.use('/api/topics', topicRouter);
+app.use('/api/sessions', sessionRouter);
+app.use('/api/ai', aiRouter);
+app.use('/api/users', userRouter);
+
 // Test route
 app.get('/', (req, res) => res.send('Server is Live!'));
 

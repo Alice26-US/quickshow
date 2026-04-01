@@ -2,18 +2,20 @@ import React from "react"
 import Navbar from "./components/Navbar"
 import { Route,  Routes, useLocation } from "react-router-dom"
 import Home from "./pages/Home"
-import Movies from "./pages/Movies"
-import MoviesDetails from "./pages/MovieDetails"
-import SeatLayout from "./pages/SeatLayout"
-import MyBookings from "./pages/MyBookings"
+import Topics from "./pages/Topics"
+import TopicDetails from "./pages/TopicDetails"
+import RevisionSession from "./pages/RevisionSession"
+import MySessions from "./pages/MySessions"
+import Upgrade from "./pages/Upgrade"
 import Favorite from "./pages/Favorite"
 import { Toaster } from "react-hot-toast" 
 import Footer from "./components/Footer"
 import  Layout  from "./pages/admin/Layout"
 import Dashboard from "./pages/admin/Dashboard"
-import AddShows from "./pages/admin/AddShows"
-import ListShows from "./pages/admin/ListShows"
-import ListBookings from "./pages/admin/ListBookings"
+import AddTopic from "./pages/admin/AddTopic"
+import ListTopics from "./pages/admin/ListTopics"
+import ListSessions from "./pages/admin/ListSessions"
+import ListUsers from "./pages/admin/ListUsers"
 
 const App = () => {
 
@@ -24,16 +26,18 @@ const App = () => {
      { ! isAdminRoute && <Navbar/>}
      <Routes>
        <Route path="/" element={<Home/>} />
-       <Route path="/movies" element={<Movies/>} />
-       <Route path="/movies/:id" element={<MoviesDetails/>} />
-       <Route path="/movies/:id/:date" element={<SeatLayout/>} />
-       <Route path="/my-bookings" element={<MyBookings/>} />
+       <Route path="/topics" element={<Topics/>} />
+       <Route path="/topics/:id" element={<TopicDetails/>} />
+       <Route path="/session/:id" element={<RevisionSession/>} />
+       <Route path="/my-sessions" element={<MySessions/>} />
+       <Route path="/upgrade" element={<Upgrade/>} />
        <Route path="/favorite" element={<Favorite/>} />
        <Route path="/admin/*" element={<Layout/>}>
           <Route index element={<Dashboard/>}/>
-          <Route path="add-shows" element={<AddShows/>} />
-          <Route path="list-shows" element={<ListShows/>} />
-          <Route path="list-bookings" element={<ListBookings/>} />
+          <Route path="add-topic" element={<AddTopic/>} />
+          <Route path="list-topics" element={<ListTopics/>} />
+          <Route path="list-sessions" element={<ListSessions/>} />
+          <Route path="list-users" element={<ListUsers/>} />
        </Route>
      </Routes>
      { ! isAdminRoute && <Footer/>}
