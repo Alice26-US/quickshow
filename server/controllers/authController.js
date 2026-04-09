@@ -9,6 +9,41 @@ const generateToken = (userId) => {
   });
 };
 
+const sanitizeSubscriptionState = async (userDoc) => {
+  if (!userDoc) return null;
+
+  const hasEnded = userDoc.subscriptionEndAt && new Date(userDoc.subscriptionEndAt) <= new Date();
+  if (hasEnded && userDoc.isPro) {
+    await User.updateOne(
+      { _id: userDoc._id },
+      {
+        isPro: false,
+        subscriptionPlan: "none",
+        subscriptionStartAt: null,
+        subscriptionEndAt: null,
+      }
+    );
+    userDoc.isPro = false;
+    userDoc.subscriptionPlan = "none";
+    userDoc.subscriptionStartAt = null;
+    userDoc.subscriptionEndAt = null;
+  }
+
+  return userDoc;
+};
+
+const toAuthUser = (userDoc) => ({
+  _id: userDoc._id,
+  name: userDoc.name,
+  email: userDoc.email,
+  image: userDoc.image,
+  isPro: userDoc.isPro,
+  isAdmin: userDoc.isAdmin,
+  subscriptionPlan: userDoc.subscriptionPlan || "none",
+  subscriptionStartAt: userDoc.subscriptionStartAt,
+  subscriptionEndAt: userDoc.subscriptionEndAt,
+});
+
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -39,7 +74,7 @@ export const registerUser = async (req, res) => {
     if (user) {
       res.status(201).json({
         success: true,
-        user: { _id: user._id, name: user.name, email: user.email, image: user.image, isPro: user.isPro, isAdmin: user.isAdmin },
+        user: toAuthUser(user),
         token: generateToken(user._id),
       });
     } else {
@@ -54,12 +89,13 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    let user = await User.findOne({ email });
+    user = await sanitizeSubscriptionState(user);
 
     if (user && (await bcrypt.compare(password, user.password))) {
       res.json({
         success: true,
-        user: { _id: user._id, name: user.name, email: user.email, image: user.image, isPro: user.isPro, isAdmin: user.isAdmin },
+        user: toAuthUser(user),
         token: generateToken(user._id),
       });
     } else {
@@ -72,10 +108,11 @@ export const loginUser = async (req, res) => {
 
 export const getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.auth.userId).select("-password");
+    let user = await User.findById(req.auth.userId).select("-password");
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
+    user = await sanitizeSubscriptionState(user);
     res.json({ success: true, user });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

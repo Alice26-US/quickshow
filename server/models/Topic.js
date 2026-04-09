@@ -14,6 +14,12 @@ const topicSchema = new mongoose.Schema({
     enum: ["Beginner", "Intermediate", "Advanced"],
     default: "Beginner"
   },
+  field: {
+    type: String,
+    enum: ["Engineering", "Medical"],
+    default: "Engineering",
+    index: true,
+  },
   thumbnail: {
     type: String,
     default: ""

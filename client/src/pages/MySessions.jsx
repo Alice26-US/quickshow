@@ -1,27 +1,51 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
-import { Loader2, PlayCircle, BookOpen, Clock } from "lucide-react";
+import toast from "react-hot-toast";
+import { Loader2, PlayCircle, BookOpen, Clock, MailPlus, CalendarClock, MessageSquare } from "lucide-react";
+import fallbackThumbnail from "../assets/backgroundImage.png";
 
 const MySessions = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
   const [sessions, setSessions] = useState([]);
   const [recommended, setRecommended] = useState([]);
+  const [contentRequests, setContentRequests] = useState([]);
+  const [submittingRequest, setSubmittingRequest] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [requestForm, setRequestForm] = useState({
+    requestType: "video",
+    topic: "",
+    message: "",
+    studentEmail: user?.email || "",
+  });
+
+  const handleImageError = (event) => {
+    event.currentTarget.onerror = null;
+    event.currentTarget.src = fallbackThumbnail;
+  };
+
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem("token");
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
-        const token = localStorage.getItem('token');
-        const headers = { Authorization: `Bearer ${token}` };
+        const headers = getAuthHeaders();
 
         // Fetch User Sessions
         const sessionRes = await axios.get(`${API_URL}/sessions/my-sessions`, { headers });
         if (sessionRes.data.success) {
            setSessions(sessionRes.data.sessions);
+        }
+
+        const requestRes = await axios.get(`${API_URL}/requests/my`, { headers });
+        if (requestRes.data.success) {
+          setContentRequests(requestRes.data.requests);
         }
 
         // Fetch Recommendations
@@ -37,7 +61,69 @@ const MySessions = () => {
       }
     };
     if (user) fetchData();
+  }, [API_URL, user]);
+
+  useEffect(() => {
+    if (!user?.email) return;
+    setRequestForm((prev) => ({
+      ...prev,
+      studentEmail: prev.studentEmail || user.email,
+    }));
   }, [user]);
+
+  const handleSubmitRequest = async (e) => {
+    e.preventDefault();
+    if (!requestForm.topic.trim() || !requestForm.message.trim()) {
+      toast.error("Please provide topic and request details.");
+      return;
+    }
+
+    try {
+      setSubmittingRequest(true);
+      const headers = getAuthHeaders();
+      const { data } = await axios.post(
+        `${API_URL}/requests`,
+        {
+          requestType: requestForm.requestType,
+          topic: requestForm.topic,
+          message: requestForm.message,
+          studentEmail: requestForm.studentEmail,
+        },
+        { headers }
+      );
+
+      if (data.success) {
+        toast.success("Request sent to admin.");
+        setContentRequests((prev) => [data.request, ...prev]);
+        setRequestForm((prev) => ({
+          ...prev,
+          topic: "",
+          message: "",
+        }));
+      } else {
+        toast.error(data.message || "Could not send request.");
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Could not send request.");
+    } finally {
+      setSubmittingRequest(false);
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "fulfilled":
+        return "bg-emerald-500/15 text-emerald-300 border-emerald-500/30";
+      case "scheduled":
+        return "bg-blue-500/15 text-blue-300 border-blue-500/30";
+      case "in_review":
+        return "bg-amber-500/15 text-amber-300 border-amber-500/30";
+      case "rejected":
+        return "bg-rose-500/15 text-rose-300 border-rose-500/30";
+      default:
+        return "bg-gray-700/40 text-gray-300 border-gray-600/50";
+    }
+  };
 
   if (loading) {
     return <div className="pt-32 pb-20 min-h-screen flex items-center justify-center bg-gray-950"><Loader2 className="animate-spin text-blue-500 w-10 h-10" /></div>;
@@ -57,7 +143,7 @@ const MySessions = () => {
               {sessions.map((session) => (
                   <div key={session._id} className="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden hover:shadow-xl hover:border-blue-500/30 transition-all group flex flex-col cursor-pointer" onClick={() => navigate(`/session/${session._id}`)}>
                       <div className="h-40 bg-gray-800 relative">
-                          <img src={session.topicId?.thumbnail || "https://via.placeholder.com/600x400"} alt="Topic" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                          <img src={session.topicId?.thumbnail || fallbackThumbnail} onError={handleImageError} alt="Topic" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                           <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                               <PlayCircle size={40} className="text-white" />
                           </div>
@@ -85,6 +171,120 @@ const MySessions = () => {
            </div>
        )}
 
+       <div className="border-t border-gray-800 pt-10 mb-16">
+         <h2 className="text-xl font-bold text-white mb-6">Request New Learning Content</h2>
+         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <form onSubmit={handleSubmitRequest} className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+                <div className="flex items-center gap-2 mb-5">
+                    <MailPlus size={18} className="text-blue-400" />
+                    <p className="font-semibold text-white">Send Request To Admin</p>
+                </div>
+                <div className="space-y-4">
+                    <div>
+                        <label className="text-sm text-gray-400 block mb-1">Request Type</label>
+                        <select
+                            value={requestForm.requestType}
+                            onChange={(e) => setRequestForm((prev) => ({ ...prev, requestType: e.target.value }))}
+                            className="w-full bg-gray-950 border border-gray-800 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                        >
+                            <option value="video">Video</option>
+                            <option value="flashcard">Flashcard</option>
+                            <option value="both">Video + Flashcards</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className="text-sm text-gray-400 block mb-1">Topic Needed</label>
+                        <input
+                            value={requestForm.topic}
+                            onChange={(e) => setRequestForm((prev) => ({ ...prev, topic: e.target.value }))}
+                            className="w-full bg-gray-950 border border-gray-800 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                            placeholder="Example: Cardiac Pharmacology"
+                        />
+                    </div>
+                    <div>
+                        <label className="text-sm text-gray-400 block mb-1">Your Email</label>
+                        <input
+                            type="email"
+                            value={requestForm.studentEmail}
+                            onChange={(e) => setRequestForm((prev) => ({ ...prev, studentEmail: e.target.value }))}
+                            className="w-full bg-gray-950 border border-gray-800 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                            placeholder="you@example.com"
+                        />
+                    </div>
+                    <div>
+                        <label className="text-sm text-gray-400 block mb-1">Details</label>
+                        <textarea
+                            rows={4}
+                            value={requestForm.message}
+                            onChange={(e) => setRequestForm((prev) => ({ ...prev, message: e.target.value }))}
+                            className="w-full bg-gray-950 border border-gray-800 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-none"
+                            placeholder="Describe what exactly you need the admin to add."
+                        />
+                    </div>
+                    <button
+                        type="submit"
+                        disabled={submittingRequest}
+                        className="w-full inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:text-gray-400 text-white px-4 py-3 rounded-xl font-semibold transition-colors"
+                    >
+                        {submittingRequest ? <Loader2 className="w-4 h-4 animate-spin" /> : <MailPlus size={16} />}
+                        {submittingRequest ? "Sending..." : "Send Request"}
+                    </button>
+                </div>
+            </form>
+
+            <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+                <div className="flex items-center gap-2 mb-5">
+                    <MessageSquare size={18} className="text-purple-400" />
+                    <p className="font-semibold text-white">Admin Feedback</p>
+                </div>
+                {contentRequests.length === 0 ? (
+                    <div className="text-sm text-gray-500 border border-dashed border-gray-700 rounded-xl p-6 text-center">
+                        No content requests yet.
+                    </div>
+                ) : (
+                    <div className="space-y-4 max-h-[420px] overflow-y-auto pr-1">
+                        {contentRequests.map((request) => (
+                            <div key={request._id} className="border border-gray-800 rounded-xl p-4 bg-gray-950/50">
+                                <div className="flex flex-wrap items-center gap-2 mb-2">
+                                    <span className="text-xs uppercase tracking-wide text-gray-400">{request.requestType}</span>
+                                    <span className={`text-xs px-2 py-1 rounded-full border ${getStatusColor(request.status)}`}>
+                                        {String(request.status || "pending").replace("_", " ")}
+                                    </span>
+                                </div>
+                                <p className="text-white font-semibold mb-1">{request.topic}</p>
+                                <p className="text-sm text-gray-400 mb-3">{request.message}</p>
+
+                                {request.adminFeedback && (
+                                    <p className="text-sm text-emerald-200 bg-emerald-900/20 border border-emerald-500/20 rounded-lg p-3 mb-2">
+                                        {request.adminFeedback}
+                                    </p>
+                                )}
+
+                                {request.videoLink && (
+                                    <a
+                                        href={request.videoLink}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-sm text-blue-300 hover:underline break-all block mb-2"
+                                    >
+                                        Video link from admin
+                                    </a>
+                                )}
+
+                                {request.availableAt && (
+                                    <div className="inline-flex items-center gap-1.5 text-xs text-blue-300 bg-blue-500/10 border border-blue-500/20 px-2 py-1 rounded-full">
+                                        <CalendarClock size={12} />
+                                        Expected: {new Date(request.availableAt).toLocaleDateString()}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+         </div>
+       </div>
+
        {/* Recommendations Section */}
        {recommended.length > 0 && (
            <div className="border-t border-gray-800 pt-10">
@@ -93,7 +293,7 @@ const MySessions = () => {
                     {recommended.map((topic) => (
                         <div key={topic._id} className="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10 transition-all cursor-pointer group" onClick={() => navigate(`/topics/${topic._id}`)}>
                             <div className="h-32 overflow-hidden relative">
-                                <img src={topic.thumbnail || "https://via.placeholder.com/300x200"} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Topic" />
+                                <img src={topic.thumbnail || fallbackThumbnail} onError={handleImageError} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Topic" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent"></div>
                             </div>
                             <div className="p-5">

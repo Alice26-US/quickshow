@@ -4,7 +4,13 @@ import toast from "react-hot-toast";
 import { UploadCloud, FileSpreadsheet, Loader2, CheckCircle, XCircle } from "lucide-react";
 
 const AddTopic = () => {
-  const [formData, setFormData] = useState({ title: "", description: "", level: "Beginner" });
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    level: "Beginner",
+    field: "Engineering",
+  });
   const [videoFiles, setVideoFiles] = useState([]);
   const [csvFile, setCsvFile] = useState(null);
   const [thumbnailFile, setThumbnailFile] = useState(null);
@@ -32,6 +38,7 @@ const AddTopic = () => {
     data.append("title", formData.title);
     data.append("description", formData.description);
     data.append("level", formData.level);
+    data.append("field", formData.field);
     
     Array.from(videoFiles).forEach((file) => data.append("videos", file));
     if (csvFile) data.append("csvFile", csvFile);
@@ -41,7 +48,7 @@ const AddTopic = () => {
     setUploadProgress(0);
 
     try {
-      const response = await axios.post("http://localhost:3000/api/topics/add", data, {
+      const response = await axios.post(`${API_URL}/topics/add`, data, {
           headers: { "Content-Type": "multipart/form-data" },
           onUploadProgress: (progressEvent) => {
               const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -51,7 +58,12 @@ const AddTopic = () => {
       
       if (response.data.success) {
         toast.success("Course material successfully deployed.");
-        setFormData({ title: "", description: "", level: "Beginner" });
+        setFormData({
+          title: "",
+          description: "",
+          level: "Beginner",
+          field: "Engineering",
+        });
         setVideoFiles([]);
         setCsvFile(null);
         setThumbnailFile(null);
@@ -97,6 +109,14 @@ const AddTopic = () => {
                             <option value="Beginner">Beginner Level</option>
                             <option value="Intermediate">Intermediate Level</option>
                             <option value="Advanced">Advanced Level</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Student Field</label>
+                        <select name="field" value={formData.field} onChange={handleInputChange} className="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-white appearance-none">
+                            <option value="Engineering">Engineering</option>
+                            <option value="Medical">Medical / Health</option>
                         </select>
                     </div>
                 </div>

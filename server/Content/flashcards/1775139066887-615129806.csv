@@ -1,0 +1,80 @@
+What is the primary purpose of the $<!DOCTYPE html>$ declaration?,It instructs the browser to render the page in standards mode rather than quirks mode.
+"Which specific issue occurs when HTML elements are closed in the wrong order (e.g., $<b><i>text</b></i>$)?","Incorrectly nested elements, which can lead to rendering errors or broken layouts."
+Why is it essential to include an $alt$ attribute on every $<img>$ tag?,It provides alternative text for screen readers (accessibility) and for search engines to index image content (SEO).
+Which CSS-based alternative should replace deprecated tags like $<font>$ or $<center>$?,CSS classes or inline styles using the $style$ attribute.
+What is the negative impact of using inline styles instead of an external CSS file?,It makes the code difficult to maintain and prevents the reuse of styles across multiple pages.
+Which HTML5 attribute should be used to link a form input to its descriptive text for better accessibility?,"The $for$ attribute on the $<label>$ element, matching the input's $id$."
+Term: Divitis,Definition: The practice of overusing generic $<div>$ tags for structure instead of using semantic HTML elements.
+Which semantic HTML5 tags should replace generic $<div>$ elements for defining the layout structure?,"$<header>$, $<main>$, $<article>$, $<section>$, and $<footer>$."
+What tool is the industry standard for identifying syntax and structural errors in HTML markup?,The W3C Markup Validation Service.
+How do linters like HTMLHint assist developers during the coding process?,They automatically flag errors like missing attributes or unclosed tags in real-time within the code editor.
+In what year did Tim Berners-Lee launch the first version of HTML (1.0)?,1991
+What was the primary limitation of HTML 1.0 and 2.0 regarding content types?,They were focused on text-based websites and lacked support for multimedia like images and videos.
+"Which version of HTML, released in 1997, first introduced support for tables and applets?",HTML 3.2
+Which major enhancement was introduced in HTML 4.0 to allow dynamic modification of document structure?,The Document Object Model (DOM).
+When was HTML 5.0 officially introduced as the latest standard?,October 2014
+Which obsolete third-party application was rendered unnecessary for coding multimedia by the introduction of HTML5?,Adobe Flash
+What is a key syntactic difference between HTML and XHTML regarding tag management?,"In XHTML, all tags must be properly closed, whereas some tags can remain open in certain HTML versions."
+Definition: Document Object Model (DOM),"An interface that allows programming languages to manipulate the content, structure, and style of a website document as a tree of objects."
+Which built-in JavaScript object provides properties and methods to access and modify the website's DOM?,The $document$ object.
+What happens to client-side JavaScript modifications to the DOM if the user refreshes the page?,The changes disappear and the page reverts to its original HTML source code.
+Describe an instance where the browser-generated DOM differs from the original HTML source code.,"When the browser automatically corrects errors, such as adding a missing $<tbody>$ tag inside a $<table>$."
+"In the DOM tree, what are the three most common types of nodes?","Element nodes, Text nodes, and Comment nodes."
+What is the numerical $nodeType$ value for an $ELEMENT\_NODE$?,1
+What is the numerical $nodeType$ value for a $TEXT\_NODE$?,3
+What is the numerical $nodeType$ value for a $COMMENT\_NODE$?,8
+Which property can be used to retrieve the tag name of an element node in the DOM?,The $nodeName$ property.
+"In browser Developer Tools, which shorthand syntax allows you to access the currently selected DOM element in the console?",$$0$
+"Which JavaScript method is the most efficient way to access a single, unique element in the DOM?",document.getElementById()
+What type of object is returned by the $getElementsByClassName()$ method?,An array-like object called an HTMLCollection.
+How must you apply a style change to multiple elements returned by $getElementsByClassName()$?,By using a $for$ loop to iterate through the collection and applying the style to each index.
+Which DOM method returns only the first element that matches a specified CSS selector?,document.querySelector()
+What is the primary advantage of using $querySelectorAll()$ over older methods like $getElementsByTagName()$?,"It returns a NodeList, which supports modern iteration methods like $forEach()$."
+"When using $querySelectorAll()$, what do comma-separated values in the selector string (e.g., $'div, p'$) act as?","An ""AND"" operator that selects all instances of both types in the document."
+Which global object represents the browser tab and acts as the parent to the $document$ object?,The $window$ object.
+Which property accesses the root $<html>$ element of the document?,document.documentElement
+What is the difference between $parentNode$ and $parentElement$ when the parent is the document node?,"$parentNode$ returns the document node, while $parentElement$ returns $null$."
+Why does the $childNodes$ property often return more nodes than expected in an HTML-generated DOM?,It counts the whitespace and indentation between elements as text nodes.
+"Which property should be used to retrieve only the element children of a node, excluding text and comments?",The $children$ property.
+How do $firstElementChild$ and $lastElementChild$ differ from $firstChild$ and $lastChild$?,"They specifically target the first or last element nodes, ignoring text nodes like whitespace."
+Which property is used to access the node that immediately follows a specified node on the same tree level?,The $nextSibling$ property.
+Which DOM method creates a new element node but does not yet insert it into the document?,document.createElement()
+What is the risk associated with using $innerHTML$ to add content to an element?,It presents a cross-site scripting (XSS) risk because it can execute inline JavaScript.
+Which property is the safer alternative to $innerHTML$ for setting the text content of a node?,The $textContent$ property.
+Which method is used to add a new node as the last child of a specified parent?,node.appendChild()
+What are the two arguments required by the $insertBefore()$ method?,The new node to be added and the sibling node that will follow the new node.
+Which method replaces an existing child node with a new node?,"node.replaceChild(newNode, oldNode)"
+How does $node.remove()$ differ from $node.removeChild()$?,"$remove()$ is called directly on the node to be deleted, whereas $removeChild()$ is called on the parent to delete a child."
+Which method returns a boolean indicating whether an element possesses a specific attribute?,hasAttribute()
+"Which method is used to retrieve the value of a specific attribute, such as an image's source?",getAttribute()
+"How do you remove an attribute, such as $href$, from an anchor tag using JavaScript?",element.removeAttribute('href')
+Which property allows you to overwrite the entire class attribute of an element as a single string?,The $className$ property.
+Which $classList$ method adds a class to an element without overwriting existing classes?,classList.add()
+What is the function of the $classList.toggle()$ method?,It adds a class if it is not present and removes it if it is already present.
+Which method checks if a specific class value exists on an element and returns true or false?,classList.contains()
+Why must kebab-case CSS properties (like $background-color$) be changed when used in the JavaScript $style$ property?,"JavaScript uses camelCase notation (e.g., $backgroundColor$) for style properties."
+"What is a significant drawback of using $element.setAttribute('style', ...)$ to modify styles?",It removes all existing inline styles on the element and replaces them with the new string.
+Definition: Event Listener,A responsive interface attached to an element that waits for a specific action (like a click) to trigger a callback function.
+"Why are inline event handlers (e.g., $onclick=""...""$) generally discouraged in modern development?","They mix logic with markup, making the code harder to maintain and scale."
+What happens if you assign two separate functions to the $onclick$ property of the same element?,"The second function will overwrite the first one, and only the second will fire."
+Which method allows multiple functions to be triggered by the same event on a single element?,addEventListener()
+What are the two mandatory parameters for $addEventListener()$?,The event type (as a string) and the listener callback function.
+"When passing a named function to $addEventListener()$, why are parentheses omitted after the function name?",Because you are passing a reference to the function rather than invoking it immediately.
+Which method is used to stop an element from responding to a specific event that was previously added?,removeEventListener()
+Which mouse event fires specifically when an element is clicked twice in rapid succession?,dblclick
+How do $mouseenter$ and $mouseleave$ events differ from $click$ events?,They are triggered by the position of the mouse pointer relative to the element's boundaries rather than a button press.
+Which browser tool provides an accessibility score and a report on whether a site meets WCAG standards?,Lighthouse (within Chrome DevTools).
+What is the primary benefit of using semantic HTML5 tags for SEO?,They help search engine crawlers understand the structure and priority of content on a webpage.
+"In the context of the DOM tree, what is a 'descendant'?",Any node nested more than one level below a specified parent node.
+Which tool can be integrated into a CI/CD pipeline to ensure invalid HTML does not reach production?,CLI tools like $html-validate$ or $htmlhint-cli$.
+What is the recommended indentation for readable and maintainable HTML code?,2 or 4 spaces.
+How does the browser handle a missing required $<tbody>$ tag in a $<table>$ source?,It automatically inserts the $<tbody>$ tag into the DOM during parsing.
+Which JavaScript property can be used to check if a node has any children at all?,The $hasChildNodes()$ method or checking the $length$ of the $childNodes$ property.
+Which DOM property allows you to see the exact text content inside a text node or a comment node?,The $nodeValue$ property.
+"What logic does $querySelector('div, article')$ follow if both elements exist on the page?",It returns the one that appears first in the document.
+"Why is it important to test websites using keyboard navigation (Tab, Enter)?",To ensure the site is usable for individuals with motor impairments who cannot use a mouse.
+Which HTML version first introduced the support for scripting languages like JavaScript?,HTML 4.0
+"In modern development, why is it preferred to work with the DOM directly rather than using libraries like jQuery?","Modern browsers have standardized DOM APIs that are fast and efficient, reducing the need for external library overhead."
+What specific character is used as a selector for an ID attribute in $querySelector()$?,The hash symbol ($#$).
+What specific character is used as a selector for a class attribute in $querySelector()$?,The period or full stop ($.$).
+Which method is used to swap an existing CSS class for a different one in a single step?,"classList.replace('oldClass', 'newClass')"

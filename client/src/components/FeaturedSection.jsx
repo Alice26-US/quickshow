@@ -6,11 +6,12 @@ import TopicCard from "./TopicCard";
 
 const FeaturedSection = () => {
     const [topics, setTopics] = useState([]);
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
     useEffect(() => {
         const fetchRecentTopics = async () => {
             try {
-                const { data } = await axios.get("http://localhost:3000/api/topics/list");
+                const { data } = await axios.get(`${API_URL}/topics/list`);
                 if (data.success) {
                     // Grab only the latest 3 for the home page feature
                     setTopics(data.topics.slice(0, 3));
@@ -20,7 +21,7 @@ const FeaturedSection = () => {
             }
         };
         fetchRecentTopics();
-    }, []);
+    }, [API_URL]);
 
     return (
         <div className="py-24 px-6 md:px-16 lg:px-36 bg-gray-950 text-white relative">

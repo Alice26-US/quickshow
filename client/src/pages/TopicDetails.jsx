@@ -9,6 +9,7 @@ const TopicDetails = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const userId = user?._id;
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
   
   const [topic, setTopic] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -16,7 +17,7 @@ const TopicDetails = () => {
   useEffect(() => {
     const fetchTopic = async () => {
       try {
-        const { data } = await axios.get(`http://localhost:3000/api/topics/${id}`);
+        const { data } = await axios.get(`${API_URL}/topics/${id}`);
         if (data.success) {
           setTopic(data.topic);
         } else {
@@ -29,7 +30,7 @@ const TopicDetails = () => {
       }
     };
     fetchTopic();
-  }, [id]);
+  }, [API_URL, id]);
 
   const startRevision = async () => {
     if (!userId) {
@@ -38,7 +39,7 @@ const TopicDetails = () => {
     }
     
     try {
-        const { data } = await axios.post("http://localhost:3000/api/sessions/start", {
+        const { data } = await axios.post(`${API_URL}/sessions/start`, {
             userId,
             topicId: id
         });
@@ -61,6 +62,11 @@ const TopicDetails = () => {
     <div className="container mx-auto px-4 py-20 pt-32 text-white min-h-screen">
       <div className="max-w-4xl mx-auto bg-gray-900 border border-gray-700 rounded-2xl p-8 shadow-2xl">
         <h1 className="text-5xl font-extrabold text-blue-400 mb-6">{topic.title}</h1>
+        <div className="mb-4">
+          <span className="inline-block px-3 py-1 text-xs rounded-full bg-sky-500/10 text-sky-300 border border-sky-500/20">
+            {(topic.field || "Engineering") === "Medical" ? "Medical / Health" : "Engineering"}
+          </span>
+        </div>
         <p className="text-lg text-gray-300 mb-8 leading-relaxed">{topic.description}</p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">

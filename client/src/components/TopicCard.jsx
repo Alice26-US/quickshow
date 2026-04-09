@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { BookOpen, Video } from "lucide-react";
 
 const TopicCard = ({ topic }) => {
+    const studentField = topic.field || "Engineering";
     
     // Fallback image if we wanted cover images eventually. Using elegant gradient for now.
     const bgGradients = [
@@ -21,9 +22,14 @@ const TopicCard = ({ topic }) => {
             <Link to={`/topics/${topic._id}`} className={`h-40 w-full bg-gradient-to-br ${gradient} p-6 flex flex-col justify-end relative overflow-hidden`}>
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
                 <div className="relative z-10">
-                    <span className="inline-block px-3 py-1 bg-black/40 backdrop-blur-sm rounded-full text-xs text-white font-medium mb-3 border border-white/10 uppercase tracking-wider">
-                        {topic.level}
-                    </span>
+                    <div className="flex gap-2 mb-3 flex-wrap">
+                        <span className="inline-block px-3 py-1 bg-black/40 backdrop-blur-sm rounded-full text-xs text-white font-medium border border-white/10 uppercase tracking-wider">
+                            {topic.level}
+                        </span>
+                        <span className="inline-block px-3 py-1 bg-black/40 backdrop-blur-sm rounded-full text-xs text-white font-medium border border-white/10">
+                            {studentField === "Medical" ? "Medical / Health" : "Engineering"}
+                        </span>
+                    </div>
                     <h3 className="text-xl font-bold text-white line-clamp-2 leading-tight group-hover:text-blue-200 transition-colors">{topic.title}</h3>
                 </div>
             </Link>

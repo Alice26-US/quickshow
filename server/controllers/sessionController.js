@@ -1,4 +1,6 @@
 import Session from '../models/Session.js';
+import Topic from '../models/Topic.js';
+import mongoose from 'mongoose';
 
 export const getAllSessions = async (req, res) => {
   try {
@@ -16,6 +18,19 @@ export const getAllSessions = async (req, res) => {
 export const createSession = async (req, res) => {
   try {
     const { userId, topicId } = req.body;
+
+    if (!userId || !topicId) {
+      return res.status(400).json({ success: false, message: 'userId and topicId are required' });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(topicId)) {
+      return res.status(400).json({ success: false, message: 'Invalid topicId' });
+    }
+
+    const topicExists = await Topic.exists({ _id: topicId });
+    if (!topicExists) {
+      return res.status(404).json({ success: false, message: 'Topic not found' });
+    }
     
     const session = new Session({
       userId,

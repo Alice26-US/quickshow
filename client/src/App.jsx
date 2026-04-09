@@ -16,9 +16,11 @@ import Footer from "./components/Footer"
 import  Layout  from "./pages/admin/Layout"
 import Dashboard from "./pages/admin/Dashboard"
 import AddTopic from "./pages/admin/AddTopic"
+import EditTopic from "./pages/admin/EditTopic"
 import ListTopics from "./pages/admin/ListTopics"
 import ListSessions from "./pages/admin/ListSessions"
 import ListUsers from "./pages/admin/ListUsers"
+import ContentRequests from "./pages/admin/ContentRequests"
 
 const App = () => {
 
@@ -42,9 +44,11 @@ const App = () => {
        <Route path="/admin/*" element={<Layout/>}>
           <Route index element={<Dashboard/>}/>
           <Route path="add-topic" element={<AddTopic/>} />
+          <Route path="edit-topic/:id" element={<EditTopic/>} />
           <Route path="list-topics" element={<ListTopics/>} />
           <Route path="list-sessions" element={<ListSessions/>} />
           <Route path="list-users" element={<ListUsers/>} />
+          <Route path="content-requests" element={<ContentRequests/>} />
        </Route>
      </Routes>
      { ! isAdminRoute && <Footer/>}

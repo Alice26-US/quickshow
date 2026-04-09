@@ -8,11 +8,13 @@ const Topics = () => {
   const [topics, setTopics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedField, setSelectedField] = useState("All");
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
   useEffect(() => {
     const fetchTopics = async () => {
       try {
-        const { data } = await axios.get("http://localhost:3000/api/topics/list");
+        const { data } = await axios.get(`${API_URL}/topics/list`);
         if (data.success) {
           setTopics(data.topics);
         } else {
@@ -25,9 +27,19 @@ const Topics = () => {
       }
     };
     fetchTopics();
-  }, []);
+  }, [API_URL]);
 
-  const filteredTopics = topics.filter(t => t.title.toLowerCase().includes(searchQuery.toLowerCase()));
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const filteredTopics = topics.filter((topic) => {
+    const topicField = topic.field || "Engineering";
+    const matchesField = selectedField === "All" || topicField === selectedField;
+    const matchesQuery =
+      !normalizedQuery ||
+      topic.title.toLowerCase().includes(normalizedQuery) ||
+      topic.description.toLowerCase().includes(normalizedQuery);
+
+    return matchesField && matchesQuery;
+  });
 
   return (
     <div className="bg-gray-950 min-h-screen pt-32 pb-20 px-6 md:px-16 lg:px-36 text-white font-sans">
@@ -48,6 +60,22 @@ const Topics = () => {
                     className="w-full bg-gray-900 border border-gray-800 rounded-full pl-12 pr-6 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-white placeholder-gray-500 shadow-inner"
                 />
             </div>
+        </div>
+
+        <div className="flex flex-wrap gap-3 mb-10">
+            {["All", "Engineering", "Medical"].map((field) => (
+              <button
+                key={field}
+                onClick={() => setSelectedField(field)}
+                className={`px-4 py-2 rounded-full text-sm border transition-colors ${
+                  selectedField === field
+                    ? "bg-blue-600 border-blue-500 text-white"
+                    : "bg-gray-900 border-gray-800 text-gray-300 hover:bg-gray-800"
+                }`}
+              >
+                {field === "Medical" ? "Medical / Health" : field}
+              </button>
+            ))}
         </div>
 
       {loading ? (

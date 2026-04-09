@@ -10,8 +10,7 @@ const Signup = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
+   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name || !email || !password) {
       return toast.error("Please fill in all fields.");
