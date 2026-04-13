@@ -14,9 +14,39 @@
   scrollbar-color: #787777 #1e1e1e;
 }
 
+:root{
+  color-scheme: dark light;
+}
+
+html.theme-dark,
+html[data-theme="dark"]{
+  color-scheme: dark;
+}
+
+html.theme-light,
+html[data-theme="light"]{
+  color-scheme: light;
+  --color-gray-950: #F8FAFC;
+  --color-gray-900: #FFFFFF;
+  --color-gray-800: #F1F5F9;
+  --color-gray-700: #E2E8F0;
+  --color-gray-600: #CBD5E1;
+  --color-gray-500: #64748B;
+  --color-gray-400: #475569;
+  --color-gray-300: #334155;
+  --color-gray-200: #1E293B;
+  --color-gray-100: #0F172A;
+  --color-white: #0F172A;
+}
+
+html, body, #root{
+  min-height: 100%;
+}
+
 body{
-  background-color: #09090B;
-  color: white;
+  background-color: #030712;
+  color: #F3F4F6;
+  transition: background-color 180ms ease, color 180ms ease;
 }
 
 .no-scrollbar{
@@ -30,4 +60,34 @@ input::-webkit-inner-spin-button {
 
 ::-webkit-calendar-picker-indicator {
   filter: invert(1);
+}
+
+html.theme-light *,
+html[data-theme="light"] *{
+  scrollbar-color: #94A3B8 #E2E8F0;
+}
+
+html.theme-light body,
+html[data-theme="light"] body{
+  background-color: #F1F5F9;
+  color: #111827;
+}
+
+html.theme-light .bg-black\/50,
+html.theme-light .bg-black\/70,
+html.theme-light .bg-black\/90,
+html[data-theme="light"] .bg-black\/50,
+html[data-theme="light"] .bg-black\/70,
+html[data-theme="light"] .bg-black\/90{
+  background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+html.theme-light .bg-\[\#0a0a0a\],
+html[data-theme="light"] .bg-\[\#0a0a0a\]{
+  background-color: #F1F5F9 !important;
+}
+
+html.theme-light ::-webkit-calendar-picker-indicator,
+html[data-theme="light"] ::-webkit-calendar-picker-indicator {
+  filter: none;
 }

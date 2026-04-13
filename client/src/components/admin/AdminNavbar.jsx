@@ -2,10 +2,12 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { assets } from "../../assets/assets";
 import { useAuth } from "../../context/AuthContext";
-import { ExternalLink, User as UserIcon, BookOpen, LogOut } from "lucide-react";
+import { useTheme } from "../../context/ThemeContext";
+import { ExternalLink, User as UserIcon, BookOpen, LogOut, Moon, Sun } from "lucide-react";
 
 const AdminNavbar = () => {
   const { user, logout } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   return (
@@ -20,6 +22,14 @@ const AdminNavbar = () => {
       </Link>
       
       <div className="flex items-center gap-4">
+          <button
+            onClick={toggleTheme}
+            className="inline-flex items-center justify-center w-10 h-10 rounded-full border border-gray-700 bg-gray-900 text-gray-200 hover:bg-gray-800 transition-colors"
+            title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {isDark ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
           <Link to="/" className="text-sm font-medium text-gray-400 hover:text-white transition-colors max-md:hidden flex items-center gap-2"><ExternalLink size={16}/> View Site</Link>
           <div className="w-px h-6 bg-gray-800 mx-2 max-md:hidden"></div>
           

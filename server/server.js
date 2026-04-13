@@ -4,6 +4,7 @@ import 'dotenv/config';
 import mongoose from 'mongoose';
 import connectDB from './configs/db.js';
 import { requireAuth } from "./middlewares/authMiddleware.js";
+import { requireAdmin } from "./middlewares/adminMiddleware.js";
 import { serve } from "inngest/express";
 import { inngest, functions } from './inngest/index.js';
 
@@ -36,7 +37,7 @@ app.use('/api/sessions', sessionRouter);
 app.use('/api/ai', aiRouter);
 app.use('/api/users', requireAuth, userRouter);
 app.use('/api/auth', authRouter);
-app.use('/api/admin', adminRouter);
+app.use('/api/admin', requireAuth, requireAdmin, adminRouter);
 app.use('/api/requests', requireAuth, requestRouter);
 
 // Test route

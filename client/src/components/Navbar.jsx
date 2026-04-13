@@ -1,15 +1,32 @@
 import React, { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, NavLink, useNavigate } from "react-router-dom"
 import { assets } from "../assets/assets"
-import { MenuIcon, SearchIcon, BookOpen, XIcon, UserCircle } from "lucide-react"
+import { MenuIcon, BookOpen, XIcon, UserCircle, Moon, Sun } from "lucide-react"
 import { useAuth } from "../context/AuthContext"
+import { useTheme } from "../context/ThemeContext"
 
 const Navbar = () => {
 
     const [ isOpen, setIsOpen ] = useState(false);
     const { user, logout } = useAuth()
+    const { isDark, toggleTheme } = useTheme()
 
     const navigate = useNavigate()
+    const dashboardLink = user?.isAdmin ? "/admin" : "/dashboard"
+    const dashboardLabel = user?.isAdmin ? "Admin Panel" : "My Dashboard"
+
+    const navItems = [
+      { to: "/", label: "Home", end: true },
+      { to: "/topics", label: "Browse Topics" },
+      { to: dashboardLink, label: dashboardLabel }
+    ]
+
+    const navLinkClass = ({ isActive }) =>
+      `relative pb-1 transition-colors ${
+        isActive
+          ? "text-white after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-full after:rounded-full after:bg-blue-500"
+          : "text-gray-200 md:text-gray-300 hover:text-white"
+      }`
 
   return (
     <div className="fixed top-0 left-0 z-50 w-full flex items-center justify-between px-6 md:px-16 lg:px-36 py-5 bg-black/50 backdrop-blur-md border-b border-gray-800"> 
@@ -30,17 +47,29 @@ const Navbar = () => {
              <XIcon className="md:hidden absolute top-6 right-6 w-6 h-6 
                cursor-pointer text-white" onClick={()=> setIsOpen(!isOpen)}/>
 
-            <Link className="hover:text-white transition-colors" onClick={()=>  {scrollTo(0,0); setIsOpen(false)}} to='/'>Home</Link>
-            <Link className="hover:text-white transition-colors" onClick={()=>  {scrollTo(0,0); setIsOpen(false)}} to='/topics'>Browse Topics</Link>
-            {user?.isAdmin ? (
-               <Link className="hover:text-white transition-colors" onClick={()=>  {scrollTo(0,0); setIsOpen(false)}} to='/admin'>Admin Panel</Link>
-            ) : (
-               <Link className="hover:text-white transition-colors" onClick={()=>  {scrollTo(0,0); setIsOpen(false)}} to='/dashboard'>My Dashboard</Link>
-            )}
+            {navItems.map((item) => (
+              <NavLink
+                key={item.label}
+                end={item.end}
+                to={item.to}
+                onClick={()=>  {scrollTo(0,0); setIsOpen(false)}}
+                className={navLinkClass}
+              >
+                {item.label}
+              </NavLink>
+            ))}
         </div>
 
-    <div className="flex items-center gap-8" >
-         <SearchIcon className=" max-md:hidden w-6 h-6 cursor-pointer text-gray-300 hover:text-white transition-colors"/>
+    <div className="flex items-center gap-4 md:gap-6" >
+         <button
+           onClick={toggleTheme}
+           className="inline-flex items-center justify-center w-10 h-10 rounded-full border border-gray-700 bg-gray-900 text-gray-200 hover:bg-gray-800 transition-colors"
+           title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+           aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+         >
+           {isDark ? <Sun size={18} /> : <Moon size={18} />}
+         </button>
+         {/* <SearchIcon className=" max-md:hidden w-6 h-6 cursor-pointer text-gray-300 hover:text-white transition-colors"/> */}
          {
             !user ? (
                   <Link to="/login"

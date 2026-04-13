@@ -99,11 +99,22 @@ export const toggleProStatus = async (req, res) => {
   }
 };
 
-// Mock Mobile Money Payment (no external API)
+// Mock Payment Checkout (no external API)
 export const mockPayment = async (req, res) => {
   try {
-    const { userId, phoneProvider, phoneNumber, plan } = req.body;
-    if (!phoneNumber || !phoneProvider || !plan) {
+    const {
+      userId,
+      phoneProvider,
+      phoneNumber,
+      paymentMethod,
+      paymentDetail,
+      plan,
+    } = req.body;
+
+    const resolvedMethod = (paymentMethod || phoneProvider || "").trim();
+    const resolvedDetail = (paymentDetail || phoneNumber || "").trim();
+
+    if (!resolvedDetail || !resolvedMethod || !plan) {
       return res.json({ success: false, message: "Invalid payment details" });
     }
 
@@ -122,7 +133,7 @@ export const mockPayment = async (req, res) => {
     return res.json({
       success: true,
       paymentStatus: "success",
-      message: `Mock payment via ${phoneProvider} successful. ${selectedPlan.label} plan activated.`,
+      message: `Mock payment via ${resolvedMethod} successful. ${selectedPlan.label} plan activated.`,
       subscription,
     });
   } catch (err) {
@@ -160,4 +171,3 @@ export const updateProfile = async (req, res) => {
     res.json({ success: false, message: err.message });
   }
 };
-

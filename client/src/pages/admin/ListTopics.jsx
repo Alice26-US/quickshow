@@ -58,6 +58,13 @@ const ListTopics = () => {
         }
     };
 
+    const getFieldLabel = (field) => {
+        const normalizedField = field === "Health" ? "Medical" : field === "Agriculture" ? "Agricultural" : field;
+        if (normalizedField === "Medical") return "Medical / Health";
+        if (normalizedField === "Agricultural") return "Agricultural";
+        return "Engineering";
+    };
+
     return (
         <div className="p-6 lg:p-8 bg-gray-950 text-gray-100 min-h-screen">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
@@ -125,7 +132,7 @@ const ListTopics = () => {
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-sky-500/10 text-sky-300 border border-sky-500/20">
-                                                {(topic.field || "Engineering") === "Medical" ? "Medical / Health" : "Engineering"}
+                                                {getFieldLabel(topic.field || "Engineering")}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">

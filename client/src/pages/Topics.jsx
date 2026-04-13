@@ -10,6 +10,12 @@ const Topics = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedField, setSelectedField] = useState("All");
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+  const fieldOptions = [
+    { value: "All", label: "All" },
+    { value: "Engineering", label: "Engineering" },
+    { value: "Medical", label: "Medical / Health" },
+    { value: "Agricultural", label: "Agricultural" },
+  ];
 
   useEffect(() => {
     const fetchTopics = async () => {
@@ -31,7 +37,13 @@ const Topics = () => {
 
   const normalizedQuery = searchQuery.trim().toLowerCase();
   const filteredTopics = topics.filter((topic) => {
-    const topicField = topic.field || "Engineering";
+    const topicFieldRaw = topic.field || "Engineering";
+    const topicField =
+      topicFieldRaw === "Health"
+        ? "Medical"
+        : topicFieldRaw === "Agriculture"
+          ? "Agricultural"
+          : topicFieldRaw;
     const matchesField = selectedField === "All" || topicField === selectedField;
     const matchesQuery =
       !normalizedQuery ||
@@ -63,17 +75,17 @@ const Topics = () => {
         </div>
 
         <div className="flex flex-wrap gap-3 mb-10">
-            {["All", "Engineering", "Medical"].map((field) => (
+            {fieldOptions.map((field) => (
               <button
-                key={field}
-                onClick={() => setSelectedField(field)}
+                key={field.value}
+                onClick={() => setSelectedField(field.value)}
                 className={`px-4 py-2 rounded-full text-sm border transition-colors ${
-                  selectedField === field
+                  selectedField === field.value
                     ? "bg-blue-600 border-blue-500 text-white"
                     : "bg-gray-900 border-gray-800 text-gray-300 hover:bg-gray-800"
                 }`}
               >
-                {field === "Medical" ? "Medical / Health" : field}
+                {field.label}
               </button>
             ))}
         </div>

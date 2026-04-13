@@ -7,6 +7,16 @@ import fs from 'fs';
 
 const CONTENT_ROOT = path.resolve('Content');
 const DELIMITER_CANDIDATES = [',', ';', '\t', '|'];
+const ALLOWED_TOPIC_FIELDS = new Set(["Engineering", "Medical", "Agricultural"]);
+const TOPIC_FIELD_ALIASES = {
+  Health: "Medical",
+  Agriculture: "Agricultural",
+};
+
+const normalizeTopicField = (candidate) => {
+  const normalizedCandidate = TOPIC_FIELD_ALIASES[candidate] || candidate;
+  return ALLOWED_TOPIC_FIELDS.has(normalizedCandidate) ? normalizedCandidate : "Engineering";
+};
 
 const toLocalMediaPath = (mediaPath) => {
   if (!mediaPath) return null;
@@ -190,7 +200,7 @@ export const createTopic = async (req, res) => {
       title,
       description,
       level,
-      field: field === "Medical" ? "Medical" : "Engineering",
+      field: normalizeTopicField(field),
       thumbnail,
       videos,
       flashcards,
@@ -210,7 +220,7 @@ export const listTopics = async (req, res) => {
     const { field, q } = req.query;
     const filters = [];
 
-    if (field && ["Engineering", "Medical"].includes(field)) {
+    if (field && ALLOWED_TOPIC_FIELDS.has(field)) {
       if (field === "Engineering") {
         filters.push({ $or: [{ field: "Engineering" }, { field: { $exists: false } }] });
       } else {
@@ -260,7 +270,7 @@ export const updateTopic = async (req, res) => {
     if (title !== undefined) topic.title = title;
     if (description !== undefined) topic.description = description;
     if (level !== undefined) topic.level = level;
-    if (field !== undefined) topic.field = field === "Medical" ? "Medical" : "Engineering";
+    if (field !== undefined) topic.field = normalizeTopicField(field);
 
     if (req.files && req.files.thumbnail && req.files.thumbnail[0]) {
       const mediaBaseUrl = `${req.protocol}://${req.get('host')}`;

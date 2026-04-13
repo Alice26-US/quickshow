@@ -73,7 +73,7 @@ const RevisionSession = () => {
     const [offlineRefreshToken, setOfflineRefreshToken] = useState(0);
     const [downloadingOffline, setDownloadingOffline] = useState(false);
     const [offlineProgress, setOfflineProgress] = useState({ done: 0, total: 0 });
-    
+
     // Auth State
     const [isPro, setIsPro] = useState(false);
     const [showUpgradeModal, setShowUpgradeModal] = useState({ show: false, limit: '' });
@@ -83,7 +83,7 @@ const RevisionSession = () => {
     const [previewSecondsUsed, setPreviewSecondsUsed] = useState(0);
     const previewSecondsUsedRef = useRef(0);
     const lastTrackedVideoTimeRef = useRef(0);
-    
+
     // UI State tabs
     const [activeTab, setActiveTab] = useState('lessons'); // 'lessons' or 'flashcards'
 
@@ -171,7 +171,7 @@ const RevisionSession = () => {
                 if (data.success) {
                     resolvedSession = data.session;
                     setSession(data.session);
-                    if(data.session.chatHistory) {
+                    if (data.session.chatHistory) {
                         setMessages(data.session.chatHistory);
                     }
                     writeOfflineSessionSnapshot(id, {
@@ -214,7 +214,7 @@ const RevisionSession = () => {
 
     const sendMessage = async (e) => {
         e.preventDefault();
-        if(!input.trim()) return;
+        if (!input.trim()) return;
         if (!isOnline) {
             toast.error("AI tutor needs internet connection.");
             return;
@@ -240,7 +240,7 @@ const RevisionSession = () => {
                 context: contextStr
             });
 
-            if(data.success) {
+            if (data.success) {
                 const aiMsg = { role: 'assistant', content: data.message };
                 setMessages(prev => [...prev, aiMsg]);
                 // Save AI message to DB
@@ -457,19 +457,19 @@ const RevisionSession = () => {
 
     return (
         <div className="container mx-auto px-4 py-24 min-h-screen grid grid-cols-1 xl:grid-cols-3 gap-8 text-white">
-            
+
             {/* Left Column: Content (Videos & Flashcards Toggling) */}
             <div className="xl:col-span-2 flex flex-col gap-6">
 
                 {/* Tabs */}
                 <div className="flex bg-gray-800 p-2 rounded-xl shadow-md border border-gray-700">
-                    <button 
+                    <button
                         onClick={() => setActiveTab('lessons')}
                         className={`flex-1 flex justify-center items-center gap-2 py-3 rounded-lg font-bold transition-colors ${activeTab === 'lessons' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-700'}`}
                     >
                         <Video size={20} /> Watch Lessons
                     </button>
-                    <button 
+                    <button
                         onClick={() => setActiveTab('flashcards')}
                         className={`flex-1 flex justify-center items-center gap-2 py-3 rounded-lg font-bold transition-colors ${activeTab === 'flashcards' ? 'bg-purple-600 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-700'}`}
                     >
@@ -541,10 +541,10 @@ const RevisionSession = () => {
                             <div className="flex-1">
                                 {videos.length > 0 && canPlayCurrentVideo ? (
                                     <div className="aspect-video bg-black rounded-lg overflow-hidden border border-gray-800 relative">
-                                        <video 
-                                            controls 
-                                            key={activeVideoIndex} 
-                                            autoPlay 
+                                        <video
+                                            controls
+                                            key={activeVideoIndex}
+                                            autoPlay
                                             className="w-full h-full"
                                             onLoadedMetadata={() => {
                                                 lastTrackedVideoTimeRef.current = 0;
@@ -604,14 +604,14 @@ const RevisionSession = () => {
                                     </p>
                                 )}
                             </div>
-                            
+
                             {/* Playlist Sidebar */}
                             <div className="lg:w-80 bg-gray-800 rounded-xl p-4 border border-gray-700 h-[60vh] overflow-y-auto">
                                 <h3 className="text-lg font-bold mb-4 uppercase text-gray-400 text-sm tracking-wider">Lesson Playlist</h3>
                                 <div className="space-y-2">
                                     {videos.length === 0 && <p className="text-gray-500 text-sm">Empty Playlist</p>}
                                     {videos.map((vid, idx) => (
-                                        <button 
+                                        <button
                                             key={idx}
                                             onClick={() => {
                                                 if (!isOnline && !offlineVideoUrls[idx]) {
@@ -638,7 +638,7 @@ const RevisionSession = () => {
                         <div>
                             {flashcards.length > 0 ? (
                                 <div className="flex flex-col items-center">
-                                    <div 
+                                    <div
                                         onClick={() => setFlipped((prev) => !prev)}
                                         className="w-full max-w-2xl aspect-[3/2] bg-gradient-to-br from-indigo-600 to-purple-800 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] cursor-pointer p-10 flex items-center justify-center transition-all duration-300 transform hover:scale-[1.02]"
                                     >
@@ -648,7 +648,7 @@ const RevisionSession = () => {
                                     </div>
                                     <div className="flex flex-col items-center mt-8">
                                         <div className="flex gap-4">
-                                            <button 
+                                            <button
                                                 onClick={() => { setCurrentCard(Math.max(currentBatchStart, currentCard - 1)); setFlipped(false) }}
                                                 disabled={currentCard === currentBatchStart}
                                                 className="px-6 py-2 bg-gray-800 rounded-full disabled:opacity-50 hover:bg-gray-700 shadow border border-gray-700"
@@ -656,8 +656,8 @@ const RevisionSession = () => {
                                                 Prev Card
                                             </button>
                                             <span className="py-2 text-gray-400 font-mono tracking-widest">{currentCard + 1} / {reviewFlashcards.length}</span>
-                                            <button 
-                                                onClick={() => { 
+                                            <button
+                                                onClick={() => {
                                                     if (currentCard >= maxNavigableCardIndex) {
                                                         if (!isPro && lockedFlashcardsCount > 0 && currentBatchEnd >= reviewFlashcards.length) {
                                                             setShowUpgradeModal({ show: true, limit: 'flashcard' });
@@ -668,7 +668,7 @@ const RevisionSession = () => {
                                                         }
                                                         return;
                                                     }
-                                                    setCurrentCard(Math.min(maxNavigableCardIndex, currentCard + 1)); 
+                                                    setCurrentCard(Math.min(maxNavigableCardIndex, currentCard + 1));
                                                     setFlipped(false);
                                                 }}
                                                 disabled={currentCard === maxNavigableCardIndex}
@@ -716,7 +716,7 @@ const RevisionSession = () => {
                         </button>
                     )}
                 </div>
-                
+
                 <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-800/30">
                     {messages.length === 0 && (
                         <div className="text-center mt-10">
@@ -744,15 +744,15 @@ const RevisionSession = () => {
 
                 <form onSubmit={sendMessage} className="p-4 bg-gray-900 border-t border-gray-700 shrink-0">
                     <div className="relative flex items-center">
-                        <input 
-                            type="text" 
+                        <input
+                            type="text"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            placeholder={activeTab==='lessons' ? "Ask about this video..." : "Ask about this flashcard..."}
+                            placeholder={activeTab === 'lessons' ? "Ask about this video..." : "Ask about this flashcard..."}
                             className="flex-1 bg-gray-800 text-white rounded-full py-3.5 pl-5 pr-14 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-700 shadow-inner"
                         />
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             disabled={!input.trim() || chatLoading}
                             className="absolute right-2 p-2.5 bg-blue-600 rounded-full hover:bg-blue-500 disabled:bg-gray-700 disabled:text-gray-500 transition-colors shadow"
                         >
@@ -761,7 +761,7 @@ const RevisionSession = () => {
                     </div>
                 </form>
             </div>
-            
+
             {/* Upgrade Modal Overlay */}
             {showUpgradeModal.show && (
                 <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
@@ -771,18 +771,18 @@ const RevisionSession = () => {
                         </div>
                         <h2 className="text-2xl font-bold mb-2">Upgrade to Pro</h2>
                         <p className="text-gray-400 mb-8">
-                            {showUpgradeModal.limit === 'video' 
-                                ? "Free tier includes a 30-second video preview. Subscribe to continue watching: Weekly 500 FCFA, Monthly 2,000 FCFA, Yearly 10,000 FCFA." 
+                            {showUpgradeModal.limit === 'video'
+                                ? "Free tier includes a 30-second video preview. Subscribe to continue watching: Weekly 500 FCFA, Monthly 2,000 FCFA, Yearly 10,000 FCFA."
                                 : "Free tier is limited to the first 5 questions (flashcards) per topic. Upgrade to unlock the full knowledge base."}
                         </p>
                         <div className="grid grid-cols-2 gap-4">
-                            <button 
+                            <button
                                 onClick={() => navigate(-1)}
                                 className="px-4 py-3 rounded-xl border border-gray-700 text-gray-300 font-medium hover:bg-gray-800 transition-colors"
                             >
                                 Exit
                             </button>
-                            <button 
+                            <button
                                 onClick={() => navigate('/upgrade')}
                                 className="px-4 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-500 shadow-[0_0_15px_rgba(37,99,235,0.4)] transition-colors"
                             >

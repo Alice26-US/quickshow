@@ -16,7 +16,7 @@ const topicSchema = new mongoose.Schema({
   },
   field: {
     type: String,
-    enum: ["Engineering", "Medical"],
+    enum: ["Engineering", "Medical", "Agricultural"],
     default: "Engineering",
     index: true,
   },

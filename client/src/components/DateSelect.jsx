@@ -38,7 +38,7 @@ const DateSelect = ({dateTime, id}) => {
                             onClick={() => setSelected(date)} 
                             key={date} className={ `flex flex-col items-center 
                             justify-center h-14 w-14 aspect-square rounded 
-                            cursor-pointer ${selected === date ? "bg-primary text-white" : " border bg-white/80"}`}>
+                            cursor-pointer ${selected === date ? "bg-primary text-white" : "border border-gray-700 bg-gray-900/90 text-gray-200 hover:bg-gray-800"}`}>
                                 <span>{new Date(date).getDate()}</span>
                                 <span>{new Date(date).toLocaleDateString("en-US",
                                     {month: "short"})}</span>

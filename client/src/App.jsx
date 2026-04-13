@@ -1,6 +1,6 @@
 import React from "react"
 import Navbar from "./components/Navbar"
-import { Route,  Routes, useLocation } from "react-router-dom"
+import { Navigate, Route,  Routes, useLocation } from "react-router-dom"
 import Home from "./pages/Home"
 import Topics from "./pages/Topics"
 import TopicDetails from "./pages/TopicDetails"
@@ -21,6 +21,20 @@ import ListTopics from "./pages/admin/ListTopics"
 import ListSessions from "./pages/admin/ListSessions"
 import ListUsers from "./pages/admin/ListUsers"
 import ContentRequests from "./pages/admin/ContentRequests"
+import { useAuth } from "./context/AuthContext"
+
+const AdminRouteGuard = ({ children }) => {
+  const { user, loading } = useAuth()
+
+  if (loading) {
+    return <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">Checking access...</div>
+  }
+
+  if (!user) return <Navigate to="/login" replace />
+  if (!user.isAdmin) return <Navigate to="/" replace />
+
+  return children
+}
 
 const App = () => {
 
@@ -41,7 +55,7 @@ const App = () => {
        <Route path="/profile" element={<Profile/>} />
        <Route path="/upgrade" element={<Upgrade/>} />
        <Route path="/favorite" element={<Favorite/>} />
-       <Route path="/admin/*" element={<Layout/>}>
+       <Route path="/admin/*" element={<AdminRouteGuard><Layout/></AdminRouteGuard>}>
           <Route index element={<Dashboard/>}/>
           <Route path="add-topic" element={<AddTopic/>} />
           <Route path="edit-topic/:id" element={<EditTopic/>} />

@@ -117,6 +117,7 @@ const AddTopic = () => {
                         <select name="field" value={formData.field} onChange={handleInputChange} className="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-white appearance-none">
                             <option value="Engineering">Engineering</option>
                             <option value="Medical">Medical / Health</option>
+                            <option value="Agricultural">Agricultural</option>
                         </select>
                     </div>
                 </div>

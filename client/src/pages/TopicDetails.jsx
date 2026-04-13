@@ -57,6 +57,18 @@ const TopicDetails = () => {
 
   if (loading) return <div className="text-center py-20 text-white">Loading...</div>;
   if (!topic) return <div className="text-center py-20 text-white">Topic not found</div>;
+  const topicField =
+    topic.field === "Health"
+      ? "Medical"
+      : topic.field === "Agriculture"
+        ? "Agricultural"
+        : topic.field || "Engineering";
+  const topicFieldLabel =
+    topicField === "Medical"
+      ? "Medical / Health"
+      : topicField === "Agricultural"
+        ? "Agricultural"
+        : "Engineering";
 
   return (
     <div className="container mx-auto px-4 py-20 pt-32 text-white min-h-screen">
@@ -64,7 +76,7 @@ const TopicDetails = () => {
         <h1 className="text-5xl font-extrabold text-blue-400 mb-6">{topic.title}</h1>
         <div className="mb-4">
           <span className="inline-block px-3 py-1 text-xs rounded-full bg-sky-500/10 text-sky-300 border border-sky-500/20">
-            {(topic.field || "Engineering") === "Medical" ? "Medical / Health" : "Engineering"}
+            {topicFieldLabel}
           </span>
         </div>
         <p className="text-lg text-gray-300 mb-8 leading-relaxed">{topic.description}</p>

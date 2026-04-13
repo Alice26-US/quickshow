@@ -11,6 +11,57 @@ const SUBSCRIPTION_PLANS = [
   { id: "yearly", label: "Yearly", price: 10000, duration: "365 days" },
 ];
 
+const PAYMENT_METHODS = [
+  {
+    id: "mtn-momo",
+    label: "MTN MoMo",
+    value: "MTN Mobile Money",
+    type: "phone",
+    placeholder: "e.g. 6XX XX XX XX",
+    activeClass: "bg-yellow-500/10 border-yellow-500 text-yellow-500",
+  },
+  {
+    id: "orange-money",
+    label: "Orange Money",
+    value: "Orange Money",
+    type: "phone",
+    placeholder: "e.g. 6XX XX XX XX",
+    activeClass: "bg-orange-500/10 border-orange-500 text-orange-500",
+  },
+  {
+    id: "card",
+    label: "Bank Card",
+    value: "Bank Card",
+    type: "card",
+    placeholder: "e.g. 4000 1234 5678 9010",
+    activeClass: "bg-blue-500/10 border-blue-500 text-blue-400",
+  },
+  {
+    id: "paypal",
+    label: "PayPal",
+    value: "PayPal",
+    type: "email",
+    placeholder: "e.g. you@example.com",
+    activeClass: "bg-cyan-500/10 border-cyan-500 text-cyan-400",
+  },
+  {
+    id: "bank-transfer",
+    label: "Bank Transfer",
+    value: "Bank Transfer",
+    type: "account",
+    placeholder: "e.g. Account / reference number",
+    activeClass: "bg-emerald-500/10 border-emerald-500 text-emerald-400",
+  },
+  {
+    id: "other",
+    label: "Other",
+    value: "Other",
+    type: "text",
+    placeholder: "Enter payment detail",
+    activeClass: "bg-violet-500/10 border-violet-500 text-violet-400",
+  },
+];
+
 const Upgrade = () => {
   const { user } = useAuth();
   const userId = user?._id;
@@ -18,11 +69,16 @@ const Upgrade = () => {
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
   const [loading, setLoading] = useState(false);
-  const [phoneProvider, setPhoneProvider] = useState("MTN Mobile Money");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState(PAYMENT_METHODS[0].value);
+  const [customPaymentMethod, setCustomPaymentMethod] = useState("");
+  const [paymentDetail, setPaymentDetail] = useState("");
   const [selectedPlan, setSelectedPlan] = useState("monthly");
 
   const activePlan = SUBSCRIPTION_PLANS.find((plan) => plan.id === selectedPlan);
+  const selectedPaymentMethod = PAYMENT_METHODS.find((method) => method.value === paymentMethod) || PAYMENT_METHODS[0];
+  const resolvedPaymentMethod =
+    paymentMethod === "Other" ? customPaymentMethod.trim() : paymentMethod;
+  const isPhoneMethod = selectedPaymentMethod.type === "phone";
 
   const handleCheckout = async (e) => {
     e.preventDefault();
@@ -31,7 +87,17 @@ const Upgrade = () => {
       return;
     }
     
-    if(!phoneNumber || phoneNumber.length < 8) {
+    if (paymentMethod === "Other" && !customPaymentMethod.trim()) {
+        toast.error("Please enter your payment method");
+        return;
+    }
+
+    if (!paymentDetail.trim()) {
+        toast.error("Please enter payment details");
+        return;
+    }
+
+    if (isPhoneMethod && paymentDetail.replace(/\D/g, "").length < 8) {
         toast.error("Please enter a valid phone number");
         return;
     }
@@ -40,8 +106,11 @@ const Upgrade = () => {
     try {
         const { data } = await axios.post(`${API_URL}/users/checkout`, {
             userId: userId,
-            phoneProvider,
-            phoneNumber,
+            paymentMethod: resolvedPaymentMethod,
+            paymentDetail: paymentDetail.trim(),
+            // Backward-compatible fields for older backend expectations.
+            phoneProvider: resolvedPaymentMethod,
+            phoneNumber: paymentDetail.trim(),
             plan: selectedPlan
         });
 
@@ -120,33 +189,51 @@ const Upgrade = () => {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2">Select Provider</label>
+                    <label className="block text-sm font-medium text-gray-400 mb-2">Select Payment Method</label>
                     <div className="grid grid-cols-2 gap-3">
-                        <div 
-                            onClick={() => setPhoneProvider("MTN Mobile Money")}
-                            className={`p-4 border rounded-xl cursor-pointer font-bold flex flex-col justify-center items-center gap-2 transition-all ${phoneProvider === "MTN Mobile Money" ? 'bg-yellow-500/10 border-yellow-500 text-yellow-500' : 'bg-gray-900 border-gray-800 text-gray-500 hover:border-gray-600'}`}
-                        >
-                            MTN MoMo
-                        </div>
-                        <div 
-                            onClick={() => setPhoneProvider("Orange Money")}
-                            className={`p-4 border rounded-xl cursor-pointer font-bold flex flex-col justify-center items-center gap-2 transition-all ${phoneProvider === "Orange Money" ? 'bg-orange-500/10 border-orange-500 text-orange-500' : 'bg-gray-900 border-gray-800 text-gray-500 hover:border-gray-600'}`}
-                        >
-                            Orange Money
-                        </div>
+                        {PAYMENT_METHODS.map((method) => (
+                          <button
+                            key={method.id}
+                            type="button"
+                            onClick={() => setPaymentMethod(method.value)}
+                            className={`p-4 border rounded-xl cursor-pointer font-bold flex flex-col justify-center items-center gap-2 transition-all ${
+                              paymentMethod === method.value
+                                ? method.activeClass
+                                : "bg-gray-900 border-gray-800 text-gray-500 hover:border-gray-600"
+                            }`}
+                          >
+                            {method.label}
+                          </button>
+                        ))}
                     </div>
                 </div>
 
+                {paymentMethod === "Other" && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-2">Custom Method Name</label>
+                    <input
+                      required
+                      type="text"
+                      placeholder="e.g. Wave, Apple Pay, Google Pay, Crypto"
+                      value={customPaymentMethod}
+                      onChange={(e) => setCustomPaymentMethod(e.target.value)}
+                      className="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-white placeholder-gray-600"
+                    />
+                  </div>
+                )}
+
                 <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2">Phone Number</label>
+                    <label className="block text-sm font-medium text-gray-400 mb-2">
+                      {isPhoneMethod ? "Phone Number" : "Payment Detail"}
+                    </label>
                     <div className="relative">
                         <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
                         <input 
                             required
                             type="text" 
-                            placeholder="e.g. 6XX XX XX XX" 
-                            value={phoneNumber}
-                            onChange={(e) => setPhoneNumber(e.target.value)}
+                            placeholder={selectedPaymentMethod.placeholder}
+                            value={paymentDetail}
+                            onChange={(e) => setPaymentDetail(e.target.value)}
                             className="w-full bg-gray-900 border border-gray-800 rounded-xl pl-12 pr-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-white placeholder-gray-600"
                         />
                     </div>

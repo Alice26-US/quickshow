@@ -4,6 +4,13 @@ import { BookOpen, Video } from "lucide-react";
 
 const TopicCard = ({ topic }) => {
     const studentField = topic.field || "Engineering";
+    const normalizedField = studentField === "Health" ? "Medical" : studentField === "Agriculture" ? "Agricultural" : studentField;
+    const fieldLabel =
+        normalizedField === "Medical"
+            ? "Medical / Health"
+            : normalizedField === "Agricultural"
+                ? "Agricultural"
+                : "Engineering";
     
     // Fallback image if we wanted cover images eventually. Using elegant gradient for now.
     const bgGradients = [
@@ -27,7 +34,7 @@ const TopicCard = ({ topic }) => {
                             {topic.level}
                         </span>
                         <span className="inline-block px-3 py-1 bg-black/40 backdrop-blur-sm rounded-full text-xs text-white font-medium border border-white/10">
-                            {studentField === "Medical" ? "Medical / Health" : "Engineering"}
+                            {fieldLabel}
                         </span>
                     </div>
                     <h3 className="text-xl font-bold text-white line-clamp-2 leading-tight group-hover:text-blue-200 transition-colors">{topic.title}</h3>

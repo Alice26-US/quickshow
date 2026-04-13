@@ -31,11 +31,17 @@ const EditTopic = () => {
         }
 
         const topic = data.topic;
+        const normalizedField =
+          topic.field === "Health"
+            ? "Medical"
+            : topic.field === "Agriculture"
+              ? "Agricultural"
+              : topic.field || "Engineering";
         setFormData({
           title: topic.title || "",
           description: topic.description || "",
           level: topic.level || "Beginner",
-          field: topic.field || "Engineering",
+          field: normalizedField,
         });
         setCurrentThumbnail(topic.thumbnail || "");
       } catch (error) {
@@ -163,6 +169,7 @@ const EditTopic = () => {
               >
                 <option value="Engineering">Engineering</option>
                 <option value="Medical">Medical / Health</option>
+                <option value="Agricultural">Agricultural</option>
               </select>
             </div>
           </div>

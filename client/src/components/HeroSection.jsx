@@ -1,14 +1,43 @@
 import React from "react"
-import { ArrowRight, BookOpen, Brain, PlayCircle } from "lucide-react"
+import { ArrowRight, BookOpen, Brain, PlayCircle, Shield } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { useAuth } from "../context/AuthContext"
+import toast from "react-hot-toast"
 
 const HeroSection = () => {
 
     const navigate = useNavigate()
+    const { user } = useAuth()
+    const isAdmin = Boolean(user?.isAdmin)
+
+    const handleAdminAccess = () => {
+        if (!user) {
+            toast.error("Please login first.")
+            navigate("/login")
+            return
+        }
+        if (!user.isAdmin) {
+            toast.error("Admin access required.")
+            return
+        }
+        navigate("/admin")
+    }
 
   return (
     <div className="flex flex-col items-start justify-center gap-6 px-6 md:px-16 lg:px-36 bg-gray-950 bg-[url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center h-[90vh] relative">
         <div className="absolute inset-0 bg-gradient-to-r from-gray-950 via-gray-950/90 to-transparent"></div>
+        <button
+            onClick={handleAdminAccess}
+            className={`absolute top-24 right-6 md:right-16 lg:right-36 z-20 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                isAdmin
+                    ? "border border-emerald-500/40 bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25"
+                    : "border border-gray-600/60 bg-black/50 text-gray-300 hover:bg-black/70"
+            }`}
+            title={isAdmin ? "Open Admin Dashboard" : "Admin only"}
+        >
+            <Shield size={16} />
+            Admin
+        </button>
 
         <div className="relative z-10 w-full max-w-3xl mt-20">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-medium mb-6">

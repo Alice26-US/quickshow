@@ -38,7 +38,8 @@ const Profile = () => {
                 toast.error(data.message || "Failed to update profile");
             }
         } catch (error) {
-            toast.error("An error occurred");
+         
+            
         } finally {
             setLoading(false);
         }
@@ -47,7 +48,7 @@ const Profile = () => {
     return (
         <div className="pt-24 pb-16 min-h-screen bg-gray-950 flex justify-center items-start">
             <div className="w-full max-w-lg bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-xl mt-4">
-                <h1 className="text-2xl font-bold text-white mb-6">Manage Profile</h1>
+                <h1 className="text-2xl font-bold text-blue-500 mb-6">Manage Profile</h1>
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="flex flex-col items-center mb-6">
                         <img 
@@ -56,7 +57,7 @@ const Profile = () => {
                             className="w-24 h-24 rounded-full border-4 border-gray-800 object-cover mb-4" 
                         />
                         <label className="cursor-pointer bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                            Change Avatar
+                           Edit Profile Picture
                             <input type="file" className="hidden" accept="image/*" onChange={(e) => setFile(e.target.files[0])} />
                         </label>
                     </div>
